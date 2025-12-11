@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  username  String
+  createdAt DateTime @default(now())
+  albums    Album[]
+}
+
+model Album {
+  id            String   @id @default(uuid())
+  userId        String
+  spotifyId     String? // Optional, for reference
+  title         String
+  artist        String
+  coverUrl      String
+  primaryColor  String   @default("#000000") // Extracted color for spine
+  
+  // Audio Features for Quiz
+  energy        Float    @default(0.5)
+  valence       Float    @default(0.5) // Mood
+  danceability  Float    @default(0.5)
+  tempo         Float    @default(120) // BPM
+
+  createdAt     DateTime @default(now())
+  
+  playCount     Int      @default(0)
+  lastPlayedAt  DateTime?
+
+  user          User     @relation(fields: [userId], references: [id])
+}
